@@ -1,101 +1,157 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import { Navbar } from "@/components/Navbar";
+import { ProductList } from "@/components/ProductList";
+import {
+    fetchProducts,
+    addProduct,
+    deleteProduct,
+    updateProduct,
+} from "./api/products";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+type Product = {
+    id: number;
+    name: string;
+    description: string;
+    value: number;
+    available: boolean;
+};
+
+const MySwal = withReactContent(Swal);
+
+const Home: React.FC = () => {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    const loadProducts = async () => {
+        setLoading(true);
+        try {
+            const fetchedProducts = await fetchProducts(); // Certifique-se de que esta função é assíncrona
+            setProducts(fetchedProducts);
+        } catch (error) {
+            console.error("Error loading products:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadProducts();
+    }, []);
+
+    const handleAddProduct = async () => {
+        const { value: formValues } = await MySwal.fire({
+            title: "Add Product",
+            html:
+                '<input id="swal-input1" class="swal2-input" placeholder="Name">' +
+                '<input id="swal-input2" class="swal2-input" placeholder="Description">' +
+                '<input id="swal-input3" type="number" class="swal2-input" placeholder="Value">' +
+                '<select id="swal-input4" class="swal2-input"><option value="true">Yes</option><option value="false">No</option></select>',
+            focusConfirm: false,
+            preConfirm: () => {
+                const name = (document.getElementById("swal-input1") as HTMLInputElement)
+                    .value;
+                const description = (document.getElementById(
+                    "swal-input2"
+                ) as HTMLInputElement).value;
+                const value = parseFloat(
+                    (document.getElementById("swal-input3") as HTMLInputElement).value
+                );
+                const available =
+                    (document.getElementById("swal-input4") as HTMLSelectElement).value ===
+                    "true";
+
+                if (!name || !description || isNaN(value)) {
+                    Swal.showValidationMessage("Please fill out all fields correctly.");
+                    return null;
+                }
+
+                return { name, description, value, available };
+            },
+        });
+
+        if (formValues) {
+            try {
+                const newProduct = await addProduct(formValues); // Aguarde a resposta da API
+                setProducts((prev) => [...prev, newProduct]);
+            } catch (error) {
+                console.error("Error adding product:", error);
+            }
+        }
+    };
+
+    const handleDeleteProduct = async (id: number) => {
+        try {
+            await deleteProduct(id); // Aguarde a resposta da API
+            setProducts((prev) => prev.filter((product) => product.id !== id));
+        } catch (error) {
+            console.error("Error deleting product:", error);
+        }
+    };
+
+    const handleEditProduct = async (product: Product) => {
+        const { value: formValues } = await MySwal.fire({
+            title: "Edit Product",
+            html:
+                `<input id="swal-input1" class="swal2-input" placeholder="Name" value="${product.name}">` +
+                `<input id="swal-input2" class="swal2-input" placeholder="Description" value="${product.description}">` +
+                `<input id="swal-input3" type="number" class="swal2-input" placeholder="Value" value="${product.value}">` +
+                `<select id="swal-input4" class="swal2-input">` +
+                `<option value="true" ${product.available ? "selected" : ""}>Yes</option>` +
+                `<option value="false" ${!product.available ? "selected" : ""}>No</option>` +
+                "</select>",
+            focusConfirm: false,
+            preConfirm: () => {
+                const name = (document.getElementById("swal-input1") as HTMLInputElement)
+                    .value;
+                const description = (document.getElementById(
+                    "swal-input2"
+                ) as HTMLInputElement).value;
+                const value = parseFloat(
+                    (document.getElementById("swal-input3") as HTMLInputElement).value
+                );
+                const available =
+                    (document.getElementById("swal-input4") as HTMLSelectElement).value ===
+                    "true";
+
+                if (!name || !description || isNaN(value)) {
+                    Swal.showValidationMessage("Please fill out all fields correctly.");
+                    return null;
+                }
+
+                return { id: product.id, name, description, value, available };
+            },
+        });
+
+        if (formValues) {
+            try {
+                const updatedProduct = await updateProduct(formValues); // Aguarde a resposta da API
+                setProducts((prev) =>
+                    prev.map((p) => (p.id === product.id ? updatedProduct : p))
+                );
+            } catch (error) {
+                console.error("Error updating product:", error);
+            }
+        }
+    };
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    return (
+        <div>
+            <Navbar onAddProduct={handleAddProduct} onRefresh={loadProducts} />
+            <ProductList
+                products={products}
+                onEdit={handleEditProduct}
+                onDelete={handleDeleteProduct}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
-}
+    );
+};
+
+export default Home;
