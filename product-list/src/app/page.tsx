@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { Navbar } from "@/components/Navbar";
 import { ProductList } from "@/components/ProductList";
+
 import {
     fetchProducts,
     addProduct,
