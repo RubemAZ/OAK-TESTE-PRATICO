@@ -129,7 +129,7 @@ const Home: React.FC = () => {
 
         if (formValues) {
             try {
-                const updatedProduct = await updateProduct(formValues); // Aguarde a resposta da API
+                const updatedProduct = updateProduct(formValues)
                 setProducts((prev) =>
                     prev.map((p) => (p.id === product.id ? updatedProduct : p))
                 );
@@ -144,14 +144,15 @@ const Home: React.FC = () => {
     }
 
     return (
-        <div>
-            <Navbar onAddProduct={handleAddProduct} onRefresh={loadProducts} />
-            <ProductList
-                products={products}
-                onEdit={handleEditProduct}
-                onDelete={handleDeleteProduct}
-            />
-        </div>
+            <main  className="mt-16 p-3">
+                <Navbar onAddProduct={handleAddProduct} onRefresh={loadProducts} />
+                <ProductList
+                    products={products}
+                    onEdit={handleEditProduct}
+                    onDelete={handleDeleteProduct}
+                />
+            </main>
+
     );
 };
 
