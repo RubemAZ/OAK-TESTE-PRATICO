@@ -75,8 +75,12 @@ const Home: React.FC = () => {
         if (formValues) {
             try {
                 const newProduct = await addProduct(formValues);
-                setProducts((prev) => [...prev, newProduct]);
-                await MySwal.fire("Sucesso", "Produto adicionado com sucesso.", "success");
+                if ("id" in newProduct) {
+                    setProducts((prev) => [...prev, newProduct]);
+                    await MySwal.fire("Sucesso", "Produto adicionado com sucesso.", "success");
+                } else {
+                    await MySwal.fire("Erro", newProduct.message, "error");
+                }
             } catch (error) {
                 console.error("Erro ao adicionar o produto:", error);
                 await MySwal.fire("Erro", "Não foi possível adicionar o produto.", "error");
@@ -110,34 +114,40 @@ const Home: React.FC = () => {
             `,
             focusConfirm: false,
             preConfirm: () => {
-                const name = (document.getElementById("swal-input1") as HTMLInputElement).value
-                const description = (document.getElementById("swal-input2") as HTMLInputElement).value
-                const price = (document.getElementById("swal-input3") as HTMLInputElement).value
-                const available = (document.getElementById("swal-input4") as HTMLSelectElement).value === "true"
+                const name = (document.getElementById("swal-input1") as HTMLInputElement).value;
+                const description = (document.getElementById("swal-input2") as HTMLInputElement).value;
+                const price = (document.getElementById("swal-input3") as HTMLInputElement).value;
+                const available = (document.getElementById("swal-input4") as HTMLSelectElement).value === "true";
 
                 if (!name || !description || !price) {
                     Swal.showValidationMessage("Preencha todos os campos corretamente.");
                     return null;
                 }
 
-                return { id: product.id, name, description, price, available }
-            }
-        })
+                return { id: product.id, name, description, price, available };
+            },
+        });
 
         if (formValues) {
             try {
-                const updatedProduct = await updateProduct(formValues)
-                setProducts((prev) => prev.map((p) => (p.id === product.id ? updatedProduct : p)))
-                await MySwal.fire("Sucesso", "Produto atualizado com sucesso.", "success")
+                const updatedProduct = await updateProduct(formValues);
+                if ("id" in updatedProduct) {
+                    setProducts((prev) =>
+                        prev.map((p) => (p.id === product.id ? updatedProduct : p))
+                    );
+                    await MySwal.fire("Sucesso", "Produto atualizado com sucesso.", "success");
+                } else {
+                    await MySwal.fire("Erro", updatedProduct.message, "error");
+                }
             } catch (error) {
-                console.error("Erro ao atualizar o produto:", error)
-                await MySwal.fire("Erro", "Não foi possível atualizar o produto.", "error")
+                console.error("Erro ao atualizar o produto:", error);
+                await MySwal.fire("Erro", "Não foi possível atualizar o produto.", "error");
             }
         }
     };
 
     if (loading) {
-        return <div>Carregando...</div>
+        return <div>Carregando...</div>;
     }
 
     return (
@@ -152,4 +162,4 @@ const Home: React.FC = () => {
     );
 };
 
-export default Home
+export default Home;
