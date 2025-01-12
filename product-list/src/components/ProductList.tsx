@@ -4,7 +4,7 @@ type Product = {
     id: number;
     name: string;
     description: string;
-    value: number;
+    price: string;
     available: boolean;
 };
 
@@ -28,22 +28,22 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onEdit, onDe
                 </thead>
                 <tbody>
                 {products
-                    .sort((a, b) => a.value - b.value)
+                    .sort((a, b) => parseFloat(a.price) - parseFloat(b.price))
                     .map((product) => (
                         <tr key={product.id} className="hover:bg-gray-50">
                             <td className="border border-gray-200 px-4 py-2">{product.name}</td>
-                            <td className="border border-gray-200 px-4 py-2">${product.value.toFixed(2)}</td>
+                            <td className="border border-gray-200 px-4 py-2">R$ {parseFloat(product.price).toFixed(2)}</td>
                             <td className="border border-gray-200 px-4 py-2 space-x-2">
                                 <div className="text-center">
                                     <button
                                         onClick={() => onEdit(product)}
-                                        className=" bg-mid-green hover:bg-dark-green-button text-white py-2 px-4 rounded mx-2"
+                                        className="bg-mid-green hover:bg-dark-green-button text-white py-2 px-4 rounded mx-2"
                                     >
                                         Editar
                                     </button>
                                     <button
                                         onClick={() => onDelete(product.id)}
-                                        className="bg-red-500 hover:bg-red-600 text-white  py-2 px-4 rounded mx-2"
+                                        className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded mx-2"
                                     >
                                         Excluir
                                     </button>
