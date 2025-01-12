@@ -27,13 +27,15 @@ const Home: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
+
     const loadProducts = async () => {
         setLoading(true);
         try {
-            const fetchedProducts =  fetchProducts();
+            const fetchedProducts = await fetchProducts();
             setProducts(fetchedProducts);
         } catch (error) {
-            console.error("Error loading products:", error);
+            console.error("Erro ao carregar os produtos:", error);
+            MySwal.fire("Erro", "Não foi possível carregar os produtos.", "error");
         } finally {
             setLoading(false);
         }
@@ -53,20 +55,13 @@ const Home: React.FC = () => {
                 '<p>Disponível para venda:</p><select id="swal-input4" class="swal2-input"><option value="true">Sim</option><option value="false">Não</option></select>',
             focusConfirm: false,
             preConfirm: () => {
-                const name = (document.getElementById("swal-input1") as HTMLInputElement)
-                    .value;
-                const description = (document.getElementById(
-                    "swal-input2"
-                ) as HTMLInputElement).value;
-                const value = parseFloat(
-                    (document.getElementById("swal-input3") as HTMLInputElement).value
-                );
-                const available =
-                    (document.getElementById("swal-input4") as HTMLSelectElement).value ===
-                    "true";
+                const name = (document.getElementById("swal-input1") as HTMLInputElement).value;
+                const description = (document.getElementById("swal-input2") as HTMLInputElement).value;
+                const value = parseFloat((document.getElementById("swal-input3") as HTMLInputElement).value);
+                const available = (document.getElementById("swal-input4") as HTMLSelectElement).value === "true";
 
                 if (!name || !description || isNaN(value)) {
-                    Swal.showValidationMessage("Preencha os campos corretamente.");
+                    Swal.showValidationMessage("Preencha todos os campos corretamente.");
                     return null;
                 }
 
@@ -78,18 +73,22 @@ const Home: React.FC = () => {
             try {
                 const newProduct = await addProduct(formValues);
                 setProducts((prev) => [...prev, newProduct]);
+                await MySwal.fire("Sucesso", "Produto adicionado com sucesso.", "success");
             } catch (error) {
-                console.error("Error adding product:", error);
+                console.error("Erro ao adicionar o produto:", error);
+                await MySwal.fire("Erro", "Não foi possível adicionar o produto.", "error");
             }
         }
     };
 
     const handleDeleteProduct = async (id: number) => {
         try {
-            await deleteProduct(id);
+            deleteProduct(id); // Espera a exclusão
             setProducts((prev) => prev.filter((product) => product.id !== id));
+            MySwal.fire("Sucesso", "Produto excluído com sucesso.", "success");
         } catch (error) {
-            console.error("Error deleting product:", error);
+            console.error("Erro ao excluir o produto:", error);
+            await MySwal.fire("Erro", "Não foi possível excluir o produto.", "error");
         }
     };
 
@@ -107,20 +106,16 @@ const Home: React.FC = () => {
                 "</select>",
             focusConfirm: false,
             preConfirm: () => {
-                const name = (document.getElementById("swal-input1") as HTMLInputElement)
-                    .value;
-                const description = (document.getElementById(
-                    "swal-input2"
-                ) as HTMLInputElement).value;
-                const value = parseFloat(
-                    (document.getElementById("swal-input3") as HTMLInputElement).value
-                );
-                const available =
-                    (document.getElementById("swal-input4") as HTMLSelectElement).value ===
-                    "true";
+                const name = (document.getElementById("swal-input1") as HTMLInputElement).value;
+
+                const description = (document.getElementById("swal-input2") as HTMLInputElement).value;
+
+                const value = parseFloat((document.getElementById("swal-input3") as HTMLInputElement).value);
+
+                const available = (document.getElementById("swal-input4") as HTMLSelectElement).value === "true";
 
                 if (!name || !description || isNaN(value)) {
-                    Swal.showValidationMessage("Preencha os campos corretamente.");
+                    Swal.showValidationMessage("Preencha todos os campos corretamente.");
                     return null;
                 }
 
@@ -130,13 +125,15 @@ const Home: React.FC = () => {
 
         if (formValues) {
             try {
-                const updatedProduct = updateProduct(formValues)
+                const updatedProduct = await updateProduct(formValues);
                 // @ts-ignore
                 setProducts((prev) =>
                     prev.map((p) => (p.id === product.id ? updatedProduct : p))
                 );
+                MySwal.fire("Sucesso", "Produto atualizado com sucesso.", "success");
             } catch (error) {
-                console.error("Error updating product:", error);
+                console.error("Erro ao atualizar o produto:", error);
+                await MySwal.fire("Erro", "Não foi possível atualizar o produto.", "error");
             }
         }
     };
@@ -146,15 +143,14 @@ const Home: React.FC = () => {
     }
 
     return (
-            <main  className="shadow mt-16 p-3 mx-6">
-                <Navbar onAddProduct={handleAddProduct}/>
-                <ProductList
-                    products={products}
-                    onEdit={handleEditProduct}
-                    onDelete={handleDeleteProduct}
-                />
-            </main>
-
+        <main className="shadow mt-16 p-3 mx-6">
+            <Navbar onAddProduct={handleAddProduct} />
+            <ProductList
+                products={products}
+                onEdit={handleEditProduct}
+                onDelete={handleDeleteProduct}
+            />
+        </main>
     );
 };
 
