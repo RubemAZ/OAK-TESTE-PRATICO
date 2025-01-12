@@ -30,7 +30,7 @@ const Home: React.FC = () => {
         setLoading(true);
         try {
             const fetchedProducts = await fetchProducts();
-            // @ts-ignore
+            // @ts-expect-error
             setProducts(fetchedProducts);
         } catch (error) {
             console.error("Erro ao carregar os produtos:", error);

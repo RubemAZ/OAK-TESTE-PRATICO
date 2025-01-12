@@ -50,7 +50,7 @@ function updateProduct(updatedProduct: Partial<Product>): Product | { message: s
         return { message: 'Product not found' };
     }
 
-    // @ts-ignore
+    //  @ts-expect-error
     products[productIndex] = { ...products[productIndex], ...validation.data };
     return products[productIndex];
 }
