@@ -5,7 +5,7 @@ type Product = {
     id: number;
     name: string;
     description: string;
-    value: number;
+    price: string;
     available: boolean;
 };
 
@@ -15,12 +15,13 @@ const productSchema = z.object({
     id: z.number().optional(),
     name: z.string(),
     description: z.string(),
-    value: z.string(),
+    price: z.string(),
     available: z.boolean(),
 });
 
 function fetchProducts(): Product[] {
-    return [...products].sort((a, b) => a.value - b.value);
+    // @ts-ignore
+    return [...products].sort((a, b) => (a.price) - (b.price));
 }
 
 function addProduct(product: Partial<Product>): Product | { message: string } {
