@@ -2,6 +2,7 @@
 ### Teste prático - Cadastro e listagem de produtos
 
 ### A aplicação esta implantada aqui : https://oak-teste-pratico-git-main-rubemazs-projects.vercel.app/
+### Repositório do Github : https://github.com/RubemAZ/OAK-TESTE-PRATICO
 
 ### Stack utilizada :   
 <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white"/> 
