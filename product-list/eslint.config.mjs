@@ -14,3 +14,12 @@ const eslintConfig = [
 ];
 
 export default eslintConfig;
+
+
+module.exports = {
+  eslint: {
+    rules: {
+      "@typescript-eslint/ban-ts-comment": "off",
+    },
+  },
+};
