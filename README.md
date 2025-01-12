@@ -1,23 +1,25 @@
-# Qualificação de candidato Estágio de desenvolvimento - Oak Tecnologia
+## Qualificação de candidato Estágio de desenvolvimento - Oak Tecnologia
+### Teste prático - Cadastro e listagem de produtos
 
-## Teste prático
-    Se voce souber alguma linguagem de programação e queira passar por esse desafio, será um grande diferencial perante aos demais candidatos.
+### A aplicação esta implantada aqui : https://oak-teste-pratico-git-main-rubemazs-projects.vercel.app/
+
+### Stack utilizada :   
+<img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white"/> 
+
+<img src="https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white "/> 
+
+<img src="https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white"/> 
+
+<img src="https://img.shields.io/badge/zod-%233068b7.svg?style=for-the-badge&logo=zod&logoColor=white"/> 
+
+<img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white"/> 
+
+### Como implantar localmente :
+     $ npm install
+     $ npm run dev ||$ npm run build
+     
+    
 
 
-Requisito: 𝐂𝐚𝐝𝐚𝐬𝐭𝐫𝐨 𝐞 𝐥𝐢𝐬𝐭𝐚𝐠𝐞𝐦 𝐝𝐞 𝐩𝐫𝐨𝐝𝐮𝐭𝐨𝐬
 
-𝐂𝐚𝐝𝐚𝐬𝐭𝐫𝐨:
-
-- Formulário com os campos abaixo:
-
-    - Nome do produto - campo de texto
-    - Descrição do produto - campo de texto
-    - Valor do produto - campo de valor
-    - Disponível para venda - campo com 2 opções: sim / não
-
-𝐋𝐢𝐬𝐭𝐚𝐠𝐞𝐦:
-
-- Colunas da listagem: nome, valor
-- Ordenação por valor do menor para o maior
-- Quando cadastrar um novo produto é para abrir a listagem automaticamente
-- Deve existir um botão para cadastrar um novo produto a partir da listagem
+   
