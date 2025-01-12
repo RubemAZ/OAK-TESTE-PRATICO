@@ -30,7 +30,7 @@ const Home: React.FC = () => {
     const loadProducts = async () => {
         setLoading(true);
         try {
-            const fetchedProducts = await fetchProducts(); // Certifique-se de que esta função é assíncrona
+            const fetchedProducts =  fetchProducts();
             setProducts(fetchedProducts);
         } catch (error) {
             console.error("Error loading products:", error);
@@ -45,12 +45,12 @@ const Home: React.FC = () => {
 
     const handleAddProduct = async () => {
         const { value: formValues } = await MySwal.fire({
-            title: "Add Product",
+            title: "Adicionar Produto",
             html:
-                '<input id="swal-input1" class="swal2-input" placeholder="Name">' +
-                '<input id="swal-input2" class="swal2-input" placeholder="Description">' +
-                '<input id="swal-input3" type="number" class="swal2-input" placeholder="Value">' +
-                '<select id="swal-input4" class="swal2-input"><option value="true">Yes</option><option value="false">No</option></select>',
+                '<input id="swal-input1" class="swal2-input" placeholder="Nome do Produto">' +
+                '<input id="swal-input2" class="swal2-input" placeholder="Descrição">' +
+                '<input id="swal-input3" type="number" class="swal2-input" placeholder="Preço R$">' +
+                '<p>Disponível para venda:</p><select id="swal-input4" class="swal2-input"><option value="true">Sim</option><option value="false">Não</option></select>',
             focusConfirm: false,
             preConfirm: () => {
                 const name = (document.getElementById("swal-input1") as HTMLInputElement)
@@ -66,7 +66,7 @@ const Home: React.FC = () => {
                     "true";
 
                 if (!name || !description || isNaN(value)) {
-                    Swal.showValidationMessage("Please fill out all fields correctly.");
+                    Swal.showValidationMessage("Preencha os campos corretamente.");
                     return null;
                 }
 
@@ -76,7 +76,7 @@ const Home: React.FC = () => {
 
         if (formValues) {
             try {
-                const newProduct = await addProduct(formValues); // Aguarde a resposta da API
+                const newProduct = await addProduct(formValues);
                 setProducts((prev) => [...prev, newProduct]);
             } catch (error) {
                 console.error("Error adding product:", error);
@@ -86,7 +86,7 @@ const Home: React.FC = () => {
 
     const handleDeleteProduct = async (id: number) => {
         try {
-            await deleteProduct(id); // Aguarde a resposta da API
+            await deleteProduct(id);
             setProducts((prev) => prev.filter((product) => product.id !== id));
         } catch (error) {
             console.error("Error deleting product:", error);
@@ -95,14 +95,15 @@ const Home: React.FC = () => {
 
     const handleEditProduct = async (product: Product) => {
         const { value: formValues } = await MySwal.fire({
-            title: "Edit Product",
+            title: "Editar Produto",
             html:
-                `<input id="swal-input1" class="swal2-input" placeholder="Name" value="${product.name}">` +
-                `<input id="swal-input2" class="swal2-input" placeholder="Description" value="${product.description}">` +
-                `<input id="swal-input3" type="number" class="swal2-input" placeholder="Value" value="${product.value}">` +
+                `<input id="swal-input1" class="swal2-input" placeholder="Nome do Produto" value="${product.name}">` +
+                `<input id="swal-input2" class="swal2-input" placeholder="Descrição" value="${product.description}">` +
+                `<input id="swal-input3" type="number" class="swal2-input" placeholder="Preço R$" value="${product.value}">` +
+                '<p>Disponível para venda:</p>' +
                 `<select id="swal-input4" class="swal2-input">` +
-                `<option value="true" ${product.available ? "selected" : ""}>Yes</option>` +
-                `<option value="false" ${!product.available ? "selected" : ""}>No</option>` +
+                `<option value="true" ${product.available ? "selected" : ""}>Sim</option>` +
+                `<option value="false" ${!product.available ? "selected" : ""}>Não</option>` +
                 "</select>",
             focusConfirm: false,
             preConfirm: () => {
@@ -119,7 +120,7 @@ const Home: React.FC = () => {
                     "true";
 
                 if (!name || !description || isNaN(value)) {
-                    Swal.showValidationMessage("Please fill out all fields correctly.");
+                    Swal.showValidationMessage("Preencha os campos corretamente.");
                     return null;
                 }
 
@@ -130,6 +131,7 @@ const Home: React.FC = () => {
         if (formValues) {
             try {
                 const updatedProduct = updateProduct(formValues)
+                // @ts-ignore
                 setProducts((prev) =>
                     prev.map((p) => (p.id === product.id ? updatedProduct : p))
                 );
@@ -140,12 +142,12 @@ const Home: React.FC = () => {
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div>Carregando...</div>;
     }
 
     return (
-            <main  className="mt-16 p-3">
-                <Navbar onAddProduct={handleAddProduct} onRefresh={loadProducts} />
+            <main  className="shadow mt-16 p-3 mx-6">
+                <Navbar onAddProduct={handleAddProduct}/>
                 <ProductList
                     products={products}
                     onEdit={handleEditProduct}
